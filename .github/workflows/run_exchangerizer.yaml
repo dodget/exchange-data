@@ -1,32 +1,32 @@
 name: Run the exchangerizer script
 on:
-    workflow_dispatch
-    schedule:
-        - cron: '*, *, *, *, *'
+  workflow_dispatch
+  schedule:
+    - cron: '*, *, *, *, *'
   
 
 jobs:
-    run_script:
-        runs-on: ubuntu-latest
-        steps:
-            - name: checkout
-              uses: actions/checkout@v2
-            - name: requirements
-              run: pip3 install -r requirements.txt
-            - name: run script
-              run: python3 exchangerizer.py
-              env:
-                  API_KEY: ${{ secrets.API_KEY }}
-            - name: Check status and push
-              run: |
-                  if git status | grep -q rates.txt; \
-                  then git config user.name github-actions \
-                  && git config user.email github-actions@github.com \
-                  && git add rates.txt \
-                  && git commit -m "rates added by github actions" \
-                  && git push \
-                  && echo "PUSHED='yes'" >> $GITHUB_ENV \
-                  else echo "PUSHED='no'" >> $GITHUB_ENV; fi
+  run_script:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: requirements
+        run: pip3 install -r requirements.txt
+      - name: run script
+        run: python3 exchangerizer.py
+        env:
+          API_KEY: ${{ secrets.API_KEY }}
+      - name: Check status and push
+        run: |
+          if git status | grep -q rates.txt; \
+          then git config user.name github-actions \
+          && git config user.email github-actions@github.com \
+          && git add rates.txt \
+          && git commit -m "rates added by github actions" \
+          && git push \
+          && echo "PUSHED='yes'" >> $GITHUB_ENV \
+          else echo "PUSHED='no'" >> $GITHUB_ENV; fi
             
             
             
