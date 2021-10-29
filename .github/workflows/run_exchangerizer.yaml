@@ -1,5 +1,9 @@
 name: Run the exchangerizer script
-on: [workflow_dispatch]
+on:
+  - workflow_dispatch
+  - schedule:
+    - cron: '* * * * *'
+  
 
 jobs:
     run_script:
