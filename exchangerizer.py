@@ -3,15 +3,24 @@ import requests
 
 API_KEY = os.environ.get("API_KEY")
 
+CURRENCIES = [
+    ("USD", "JPY"),
+    ("USD", "AMD"),
+    ("USD", "DKK")
+]
+
 
 def get_url(from_currency, to_currency):
     return f"https://www.alphavantage.co/query?function=CURRENCY_EXCHANGE_RATE&from_currency={from_currency}&to_currency={to_currency}&apikey={API_KEY}"
 
 
-def get_data(url):
-    r = requests.get(url)
-    r.raise_for_status()
-    return r.json()["Realtime Currency Exchange Rate"]
+def get_data(currency_codes):
+    data = []
+    for code in currency_codes:
+        r = requests.get(get_url(code[0], code[1]))
+        r.raise_for_status()
+        data.append(r.json()["Realtime Currency Exchange Rate"])
+    return data
 
 
 def build_output_data(list_of_exchanges):
@@ -31,21 +40,13 @@ def write_file(exchange_data):
             file.write(f"{exchange['from']} yields {exchange['exchange']} {exchange['to']}\n")
     
 
-
 def main():
 
-    # build urls
-    usd_to_yen_url = get_url("USD", "JPY")
-    usd_to_dram_url = get_url("USD", "AMD")
-    usd_to_kronner_url = get_url("USD", "DKK")
-
     # get the data
-    usd_to_yen = get_data(usd_to_yen_url)
-    usd_to_dram_url = get_data(usd_to_dram_url)
-    usd_to_kronner_url = get_data(usd_to_kronner_url)
+    data = get_data(CURRENCIES)
 
     # format the data
-    exchange_data = build_output_data([usd_to_yen, usd_to_dram_url, usd_to_kronner_url])
+    exchange_data = build_output_data(data)
     
     # write the data to a file
     write_file(exchange_data)
